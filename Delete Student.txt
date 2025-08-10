@@ -1,0 +1,65 @@
+package schoolmanagementsystem;
+
+//public class DeleteStudent {
+    import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+    public class DeleteStudent extends JFrame {
+
+        JTextField rollField;
+
+        public DeleteStudent() {
+            setTitle("Delete Student");
+            setSize(300, 150);
+            setLayout(new GridLayout(3, 2, 10, 10));
+            setLocationRelativeTo(null);
+
+            add(new JLabel("Enter Roll Number:"));
+            rollField = new JTextField();
+            add(rollField);
+
+            JButton deleteBtn = new JButton("Delete");
+            JButton cancelBtn = new JButton("Cancel");
+
+            add(deleteBtn);
+            add(cancelBtn);
+
+            deleteBtn.addActionListener(e -> {
+                String rollStr = rollField.getText();
+                if (rollStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter a roll number.");
+                    return;
+                }
+
+                try {
+                    int rollNo = Integer.parseInt(rollStr);
+                    Connection con = DBConnection.getConnection();
+                    String query = "DELETE FROM students WHERE roll_no = ?";
+                    PreparedStatement pst = con.prepareStatement(query);
+                    pst.setInt(1, rollNo);
+
+                    int rows = pst.executeUpdate();
+                    if (rows > 0) {
+                        JOptionPane.showMessageDialog(this, "Student deleted successfully ✅");
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Student not found ❌");
+                    }
+
+                    con.close();
+                } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(this, "Roll number must be numeric!");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+                }
+            });
+
+            cancelBtn.addActionListener(e -> dispose());
+
+            setVisible(true);
+        }
+    }
+
+

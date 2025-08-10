@@ -1,0 +1,85 @@
+package schoolmanagementsystem;
+
+//public class LoginFrame {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+    public class LoginFrame extends JFrame {
+
+
+        JTextField usernameField;
+        JPasswordField passwordField;
+
+        public LoginFrame() {
+            setTitle("School Login");
+            setSize(300, 200);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
+            setLayout(new GridLayout(4, 1));
+
+            // Username field
+            JPanel userPanel = new JPanel();
+            userPanel.add(new JLabel("Username:"));
+            usernameField = new JTextField(15);
+            userPanel.add(usernameField);
+            add(userPanel);
+
+            // Password field
+            JPanel passPanel = new JPanel();
+            passPanel.add(new JLabel("Password:"));
+            passwordField = new JPasswordField(15);
+            passPanel.add(passwordField);
+            add(passPanel);
+
+            // Login button
+            JButton loginBtn = new JButton("Login");
+            add(loginBtn);
+
+            // Status
+            JLabel statusLabel = new JLabel("", SwingConstants.CENTER);
+            add(statusLabel);
+
+            // Action Listener
+            loginBtn.addActionListener(e -> {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+
+                if (validateLogin(username, password)) {
+                    JOptionPane.showMessageDialog(this, "Login Successful ✅");
+                    dispose(); // close login frame
+                    new MainMenu(); // open dashboard (next part)
+                } else {
+                    statusLabel.setText("Invalid Login ❌");
+                }
+            });
+
+            setVisible(true);
+        }
+
+        private boolean validateLogin(String username, String password) {
+            boolean result = false;
+            try {
+                Connection con = DBConnection.getConnection();
+                String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+                PreparedStatement pst = con.prepareStatement(query);
+                pst.setString(1, username);
+                pst.setString(2, password);
+
+                ResultSet rs = pst.executeQuery();
+                result = rs.next(); // true if match found
+
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Login Error: " + e.getMessage());
+            }
+            return result;
+        }
+
+        public static void main(String[] args) {
+            new LoginFrame(); // run the login screen
+        }
+    }
+
+

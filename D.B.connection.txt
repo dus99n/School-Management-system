@@ -1,0 +1,23 @@
+package schoolmanagementsystem;
+
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class DBConnection {
+
+    static final String URL = "jdbc:mysql://localhost:3306/ write your dbname";
+    static final String USER = "root";
+    static final String PASSWORD = "write your sql password"; // your MySQL password
+
+    public static Connection getConnection() {
+        Connection con = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (Exception e) {
+            System.out.println("DB Connection Error: " + e.getMessage());
+        }
+        return con;
+    }
+}
